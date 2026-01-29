@@ -1,0 +1,57 @@
+# Kubernetes ConfigMap for Vajra Backend
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vajra-config
+  namespace: vajra
+data:
+  # Alert Configuration
+  ALERT_EMAILS: "your-email@example.com"
+  ALERT_PHONES: "+91XXXXXXXXXX"
+  ALERT_NTFY_TOPICS: "vajra-alerts"
+  
+  # Flask Configuration
+  FLASK_ENV: "production"
+  FLASK_DEBUG: "0"
+  
+  # API Configuration
+  API_HOST: "0.0.0.0"
+  API_PORT: "8008"
+  
+  # Rate Limiting
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_REQUESTS: "100"
+  RATE_LIMIT_PERIOD: "60"
+  
+  # Logging
+  LOG_LEVEL: "INFO"
+  
+  # Security
+  CORS_ORIGINS: "https://yourdomain.com"
+  
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vajra-secrets
+  namespace: vajra
+type: Opaque
+stringData:
+  # SMTP Configuration
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "587"
+  SMTP_USER: "your-email@gmail.com"
+  SMTP_PASS: "your-app-password"
+  
+  # Twilio Configuration
+  TWILIO_SID: "your-twilio-sid"
+  TWILIO_TOKEN: "your-twilio-token"
+  TWILIO_FROM: "+1XXXXXXXXXX"
+  
+  # Database
+  DATABASE_URL: "postgresql://user:pass@postgres:5432/vajra"
+  
+  # Redis (optional caching)
+  REDIS_URL: "redis://redis:6379"

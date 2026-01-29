@@ -1,0 +1,50 @@
+# Prometheus Configuration for Vajra Backend
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'vajra-monitor'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  # Backend API metrics
+  - job_name: 'vajra-backend'
+    static_configs:
+      - targets: ['localhost:8008']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Nginx reverse proxy
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['localhost:9113']  # nginx-prometheus-exporter
+
+  # Redis cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+
+  # PostgreSQL database
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['localhost:9187']  # postgres_exporter
+
+  # Docker metrics (via cadvisor)
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['localhost:8080']
+
+  # Node exporter (system metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
