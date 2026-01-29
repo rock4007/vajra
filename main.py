@@ -13,6 +13,20 @@ import re
 from collections import defaultdict
 import time
 
+# ============================================================================
+# CODE PROTECTION SYSTEM - GHOST INJECTION
+# ============================================================================
+try:
+    from code_protection_system import initialize_protection, AntiDebugProtection
+    # Initialize protection immediately
+    print("\n🛡️  Initializing Code Protection System...")
+    GHOST_PROTECTION = initialize_protection()
+    print("✅ Ghost Injection Protection: ACTIVE\n")
+except Exception as e:
+    print(f"⚠️  Warning: Code protection initialization error: {e}")
+    GHOST_PROTECTION = None
+# ============================================================================
+
 # Security configurations
 RATE_LIMIT_WINDOW = 60  # seconds
 RATE_LIMIT_MAX_REQUESTS = 100  # per IP per window
@@ -140,6 +154,17 @@ def rate_limit_check():
 
 def firewall_middleware():
     """Main firewall middleware with comprehensive security checks."""
+    # ============================================================================
+    # ANTI-TAMPERING CHECK: Verify code integrity before processing request
+    # ============================================================================
+    if GHOST_PROTECTION:
+        try:
+            # Perform anti-debug check on every request
+            AntiDebugProtection.anti_debug_check()
+        except:
+            pass  # Ghost protection will handle violations
+    # ============================================================================
+    
     ip = request.remote_addr
     
     # Get real IP from headers (behind proxy)

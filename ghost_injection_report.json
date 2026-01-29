@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-01-29T16:03:54.535962",
+  "event": "GHOST_INJECTION_TRIGGERED",
+  "violations": [
+    "CRITICAL: File modified: test_protected.txt",
+    "  Original: 3949e2daad0ba297363644e75de69a60f35024d5004d0b5b02a31626fb4254da",
+    "  Current:  b8194f4960d5d176120a70b022c77189f577e37f745ba7ac3ef02d4e88ac6c4b"
+  ],
+  "all_violations": [
+    {
+      "timestamp": "2026-01-29T16:03:54.534657",
+      "message": "CRITICAL: File modified: test_protected.txt"
+    },
+    {
+      "timestamp": "2026-01-29T16:03:54.535086",
+      "message": "  Original: 3949e2daad0ba297363644e75de69a60f35024d5004d0b5b02a31626fb4254da"
+    },
+    {
+      "timestamp": "2026-01-29T16:03:54.535355",
+      "message": "  Current:  b8194f4960d5d176120a70b022c77189f577e37f745ba7ac3ef02d4e88ac6c4b"
+    }
+  ],
+  "protected_files": [
+    "test_protected.txt"
+  ],
+  "system_info": {
+    "pid": 8732,
+    "cwd": "D:\\VajraBackend",
+    "python_version": "3.14.2 (tags/v3.14.2:df79316, Dec  5 2025, 17:18:21) [MSC v.1944 64 bit (AMD64)]"
+  }
+}
