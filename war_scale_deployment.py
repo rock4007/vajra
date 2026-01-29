@@ -376,34 +376,23 @@ class WarScaleEmergencySimulation:
         print(f"  Created by: Soumodeep Guha")
         print("="*100 + "\n")
     
-    def run_full_scale_war(self):
+    def run_full_scale_war(self, mode: str = "extended"):
         """Run complete full-scale war simulation"""
         self.print_war_banner()
         
-        print("🎮 SELECT SIMULATION MODE:\n")
-        print("1. Continuous War Simulation (5 minutes, 3 emergencies/min)")
-        print("2. Extended War Simulation (10 minutes, 5 emergencies/min)")
-        print("3. Burst Simulation (50 simultaneous emergencies)")
-        print("4. Extreme Burst (100 simultaneous emergencies)")
-        print("5. Custom Configuration\n")
+        print("🎮 SIMULATION MODE: " + mode.upper() + "\n")
         
         try:
-            choice = input("Enter choice (1-5) [default: 2]: ").strip() or "2"
-            
-            if choice == "1":
+            if mode == "continuous":
                 self.run_continuous_war_simulation(duration_minutes=5, emergencies_per_minute=3)
-            elif choice == "2":
+            elif mode == "extended":
                 self.run_continuous_war_simulation(duration_minutes=10, emergencies_per_minute=5)
-            elif choice == "3":
+            elif mode == "burst":
                 self.run_burst_simulation(num_simultaneous=50)
-            elif choice == "4":
+            elif mode == "extreme":
                 self.run_burst_simulation(num_simultaneous=100)
-            elif choice == "5":
-                duration = int(input("Duration (minutes): ") or "5")
-                rate = int(input("Emergencies per minute: ") or "3")
-                self.run_continuous_war_simulation(duration_minutes=duration, emergencies_per_minute=rate)
             else:
-                print("Invalid choice, running default simulation...")
+                print("Running default extended simulation...")
                 self.run_continuous_war_simulation(duration_minutes=10, emergencies_per_minute=5)
         
         except KeyboardInterrupt:
@@ -417,6 +406,8 @@ class WarScaleEmergencySimulation:
 
 def main():
     """Main entry point"""
+    import sys
+    
     print("\n" + "="*100)
     print("  🚨 VAJRA KAVACH - FULL SCALE WAR SITUATION DEPLOYMENT 🚨")
     print("  Created by: Soumodeep Guha")
@@ -434,10 +425,16 @@ def main():
         print("   Simulation will run in offline mode")
         print("   Start server with: python main.py")
     
-    input("\nPress Enter to begin full-scale war simulation...")
+    # Get mode from command line or use default
+    mode = "extended"
+    if len(sys.argv) > 1:
+        mode = sys.argv[1].lower()
+    
+    print(f"\n🚀 Starting {mode} simulation in 3 seconds...")
+    time.sleep(3)
     
     simulation = WarScaleEmergencySimulation()
-    simulation.run_full_scale_war()
+    simulation.run_full_scale_war(mode=mode)
 
 
 if __name__ == "__main__":
