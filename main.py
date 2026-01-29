@@ -1,3 +1,12 @@
+"""
+Vajra Kavach - Emergency Response System
+Created by: Soumodeep Guha
+Version: 1.0.0
+Year: 2026
+
+Advanced Biometric-Secured Emergency Assistance with Multi-Regional AI-Powered Threat Detection
+"""
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime

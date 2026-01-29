@@ -2,6 +2,8 @@
 
 **Advanced Biometric-Secured Emergency Assistance with Multi-Regional AI-Powered Threat Detection**
 
+**Created by: Soumodeep Guha**
+
 ---
 
 ## Executive Summary
