@@ -29,6 +29,10 @@ data:
   
   # Security
   CORS_ORIGINS: "https://yourdomain.com"
+
+  # Regions
+  REGION: "america"
+  SUPPORTED_REGIONS: "africa,america"
   
 ---
 

@@ -69,7 +69,7 @@ class GhostInjectionProtection:
             if os.path.exists(filepath):
                 checksum = self._compute_checksum(filepath)
                 self.file_checksums[filepath] = checksum
-                print(f"  ✓ {filepath}: {checksum[:16]}...")
+                print(f"  OK {filepath}: {checksum[:16]}...")
         print(f"[GHOST PROTECTION] {len(self.file_checksums)} files protected\n")
     
     def _check_file_integrity(self):
@@ -141,13 +141,13 @@ class GhostInjectionProtection:
         self.tampering_detected = True
         
         print("\n" + "="*70)
-        print("🚨 GHOST INJECTION TRIGGERED 🚨")
+        print("GHOST INJECTION TRIGGERED")
         print("="*70)
         print("SECURITY VIOLATION DETECTED - SERVER TERMINATING")
         print("-"*70)
         
         for violation in violations:
-            print(f"  ⚠ {violation}")
+            print(f"  WARN {violation}")
             self._log_violation(violation)
         
         print("-"*70)
@@ -265,7 +265,7 @@ class ReadOnlyEnforcement:
                     else:
                         os.chmod(path, 0o444)  # Read-only for all
                     
-                    print(f"  ✓ {path} - READ-ONLY")
+                    print(f"  OK {path} - READ-ONLY")
                 except Exception as e:
                     print(f"  ✗ {path} - Error: {e}")
         
@@ -283,7 +283,7 @@ class ReadOnlyEnforcement:
                     else:
                         os.chmod(path, 0o666)  # Read-write for all
                     
-                    print(f"  ✓ {path} - WRITABLE")
+                    print(f"  OK {path} - WRITABLE")
                 except Exception as e:
                     print(f"  ✗ {path} - Error: {e}")
 
@@ -320,7 +320,7 @@ class AntiDebugProtection:
         """Perform anti-debug check and crash if debugger detected"""
         if AntiDebugProtection.check_debugger():
             print("\n" + "="*70)
-            print("🚨 DEBUGGER DETECTED - GHOST INJECTION TRIGGERED 🚨")
+            print("DEBUGGER DETECTED - GHOST INJECTION TRIGGERED")
             print("="*70)
             print("Unauthorized debugging attempt detected")
             print("Server terminating immediately")
@@ -360,7 +360,7 @@ def initialize_protection(app_root=None):
     # 1. Anti-Debug Protection
     print("[1/3] Anti-Debug Protection")
     AntiDebugProtection.anti_debug_check()
-    print("  ✓ No debugger detected\n")
+    print("  OK No debugger detected\n")
     
     # 2. Read-Only Enforcement (optional - uncomment for production)
     # print("[2/3] Read-Only Enforcement")
@@ -376,15 +376,15 @@ def initialize_protection(app_root=None):
     
     # 4. Continuous monitoring
     print("[3/3] Continuous Monitoring")
-    print("  ✓ Real-time file integrity monitoring active")
-    print("  ✓ Process injection detection active")
-    print("  ✓ Ghost injection ready to trigger on tampering\n")
+    print("  OK Real-time file integrity monitoring active")
+    print("  OK Process injection detection active")
+    print("  OK Ghost injection ready to trigger on tampering\n")
     
     print("="*70)
-    print("✅ CODE PROTECTION ACTIVE")
+    print("CODE PROTECTION ACTIVE")
     print("="*70)
-    print("⚠  WARNING: Any tampering will trigger immediate server crash")
-    print("⚠  All violations logged to: security_violations.log")
+    print("WARNING: Any tampering will trigger immediate server crash")
+    print("WARNING: All violations logged to: security_violations.log")
     print("="*70 + "\n")
     
     return ghost_protection
@@ -412,7 +412,7 @@ def test_protection():
     
     print("\nStatus:", ghost.get_status())
     
-    print("\n⚠ Attempting to modify protected file...")
+    print("\nWARNING: Attempting to modify protected file...")
     print("(This should trigger ghost injection in ~2 seconds)\n")
     
     # Modify the file

@@ -58,6 +58,16 @@ spec:
             configMapKeyRef:
               name: vajra-config
               key: alert_ntfy_topics
+        - name: REGION
+          valueFrom:
+            configMapKeyRef:
+              name: vajra-config
+              key: REGION
+        - name: SUPPORTED_REGIONS
+          valueFrom:
+            configMapKeyRef:
+              name: vajra-config
+              key: SUPPORTED_REGIONS
         - name: SMTP_HOST
           valueFrom:
             secretKeyRef:

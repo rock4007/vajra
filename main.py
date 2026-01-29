@@ -13,18 +13,58 @@ import re
 from collections import defaultdict
 import time
 
+# Maintenance systems (auto-heal + threat model updater)
+try:
+    from auto_heal_manager import start_auto_heal
+    from threat_model_manager import start_threat_model_updates
+except Exception:
+    start_auto_heal = None
+    start_threat_model_updates = None
+
 # ============================================================================
 # CODE PROTECTION SYSTEM - GHOST INJECTION
 # ============================================================================
 try:
     from code_protection_system import initialize_protection, AntiDebugProtection
     # Initialize protection immediately
-    print("\n🛡️  Initializing Code Protection System...")
+    print("\nInitializing Code Protection System...")
     GHOST_PROTECTION = initialize_protection()
-    print("✅ Ghost Injection Protection: ACTIVE\n")
+    print("Ghost Injection Protection: ACTIVE\n")
 except Exception as e:
-    print(f"⚠️  Warning: Code protection initialization error: {e}")
+    print(f"Warning: Code protection initialization error: {e}")
     GHOST_PROTECTION = None
+# ============================================================================
+
+# ============================================================================
+# MAINTENANCE: AUTO-HEAL + THREAT MODEL UPDATES
+# ============================================================================
+AUTO_HEAL_MANAGER = None
+THREAT_MODEL_UPDATER = None
+try:
+    if start_auto_heal and start_threat_model_updates:
+        app_root = os.path.dirname(os.path.abspath(__file__))
+        protected = [
+            "main.py",
+            "config.py",
+            "supabase-client.js",
+            "background.js",
+            "content-script.js",
+            "manifest.json",
+        ]
+        AUTO_HEAL_MANAGER = start_auto_heal(
+            app_root=app_root,
+            protected_files=protected,
+            interval_seconds=3600  # hourly health check
+        )
+        THREAT_MODEL_UPDATER = start_threat_model_updates(
+            app_root=app_root,
+            check_interval_seconds=86400,  # daily check
+            update_interval_days=90  # every 3 months
+        )
+        print("Auto-heal enabled (hourly checks)")
+        print("Threat model auto-update enabled (90-day cadence)")
+except Exception as e:
+    print(f"Warning: Maintenance initialization error: {e}")
 # ============================================================================
 
 # Security configurations
@@ -119,6 +159,21 @@ def validate_prompt(prompt):
         if re.search(pattern, prompt, re.IGNORECASE):
             return False
     
+    return True
+
+def validate_fingerprint_payload(data: dict) -> bool:
+    """Validate fingerprint payload (basic sanity checks)."""
+    if not isinstance(data, dict):
+        return False
+    device_id = data.get("device_id")
+    if device_id is None or not isinstance(device_id, str) or len(device_id) > 128:
+        return False
+    # Expect a fingerprint hash or template reference string
+    fp = data.get("fingerprint") or data.get("fingerprint_hash") or data.get("template_id")
+    if fp is None or not isinstance(fp, str):
+        return False
+    if len(fp) < 16 or len(fp) > 1024:
+        return False
     return True
 
 def enforce_https():
@@ -275,6 +330,10 @@ CORS(app)
 ALERT_EMAILS = os.getenv("ALERT_EMAILS", "soumodeepguha22@gmail.com")
 ALERT_PHONES = os.getenv("ALERT_PHONES", "+916291283472")
 
+# Region configuration (multi-region ready)
+REGION = os.getenv("REGION", "global")
+SUPPORTED_REGIONS = [r.strip() for r in os.getenv("SUPPORTED_REGIONS", "europe,asia").split(",") if r.strip()]
+
 SMTP_HOST = os.getenv("SMTP_HOST")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER")
@@ -373,6 +432,26 @@ def heartbeat():
         "ts": ts,
         "shield_on": bool(data.get("shield_on", False)),
         "distress": bool(data.get("distress", False)),
+    })
+
+@app.post("/fingerprint")
+def fingerprint():
+    """Biometric fingerprint ingestion endpoint."""
+    data = get_sanitized_json()
+    if not validate_fingerprint_payload(data):
+        return jsonify({"status": "error", "message": "invalid fingerprint payload"}), 400
+
+    ts = data.get("ts") or datetime.utcnow().isoformat()
+    device_id = data.get("device_id")
+    # Store only hashed/template reference (never raw biometric)
+    fp_ref = data.get("fingerprint_hash") or data.get("template_id") or data.get("fingerprint")
+    log_event("fingerprint", {"device_id": device_id, "ts": ts})
+
+    return jsonify({
+        "status": "ok",
+        "ts": ts,
+        "device_id": device_id,
+        "fingerprint_ref": fp_ref
     })
 
 @app.post("/location")
@@ -684,7 +763,16 @@ def health():
 
 @app.get("/version")
 def version():
-    return jsonify({"name": "VajraBackend", "version": "0.1.0"})
+    return jsonify({
+        "name": "VajraBackend",
+        "version": "0.1.0",
+        "region": REGION,
+        "supported_regions": SUPPORTED_REGIONS,
+    })
+
+@app.get("/regions")
+def regions():
+    return jsonify({"region": REGION, "supported_regions": SUPPORTED_REGIONS})
 
 # Honeypot Endpoints (4-layer log catcher)
 @app.get("/robots.txt")

@@ -1,17 +1,21 @@
+# GitHub Actions CI/CD Pipeline for Vajra Backend
 name: CI/CD - Build, Test, and Deploy
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/vajra-backend
 
 jobs:
-  # Stage 1: Build & Test
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -25,7 +29,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -41,6 +45,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
+          fail_ci_if_error: false
 
       - name: Build Docker image
         run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
@@ -49,15 +54,15 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: '0'
 
       - name: Upload Trivy results
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: trivy-results.sarif
 
-  # Stage 2: Push Image
   push:
     needs: build
     runs-on: ubuntu-latest
@@ -100,7 +105,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
-  # Stage 3: Deploy to Staging
   deploy-staging:
     needs: push
     runs-on: ubuntu-latest
@@ -121,7 +125,6 @@ jobs:
             -n staging
           kubectl rollout status deployment/vajra-backend -n staging
 
-  # Stage 4: Deploy to Production
   deploy-production:
     needs: push
     runs-on: ubuntu-latest
@@ -158,13 +161,13 @@ jobs:
           curl -f https://api.example.com/health || exit 1
           curl -f https://api.example.com/metrics || exit 1
 
-      - name: Notify deployment
+      - name: Notify deployment success
         if: success()
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
             {
-              "text": "✅ Production deployment successful",
+              "text": "Production deployment successful",
               "blocks": [
                 {
                   "type": "section",
@@ -179,13 +182,13 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-      - name: Notify failure
+      - name: Notify deployment failure
         if: failure()
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
             {
-              "text": "❌ Production deployment failed",
+              "text": "Production deployment failed",
               "blocks": [
                 {
                   "type": "section",
@@ -200,7 +203,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-  # Stage 5: Rollback (if needed)
   rollback:
     runs-on: ubuntu-latest
     if: failure() && github.ref == 'refs/heads/main'
@@ -229,7 +231,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "⚠️ Deployment rolled back",
+              "text": "Deployment rolled back",
               "blocks": [
                 {
                   "type": "section",

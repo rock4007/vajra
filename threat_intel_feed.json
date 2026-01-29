@@ -1,0 +1,8 @@
+{
+  "sources": ["quarterly-intel-feed"],
+  "threats": [
+    "Credential stuffing",
+    "API abuse",
+    "Privilege escalation"
+  ]
+}

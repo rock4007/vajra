@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-01-29T00:00:00",
+  "next_update": "2026-04-29T00:00:00",
+  "intel_sources": ["internal-security"],
+  "threats": [
+    "SQL injection",
+    "XSS",
+    "Command injection",
+    "Prompt injection",
+    "DDoS"
+  ]
+}

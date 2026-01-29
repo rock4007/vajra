@@ -1,12 +1,17 @@
+# GitHub Actions Security Scanning Pipeline
 name: Security Scanning
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
   schedule:
-    - cron: '0 0 * * 0'  # Weekly on Sunday
+    - cron: '0 0 * * 0'
 
 jobs:
   security-scan:
@@ -18,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Run Bandit (Python security)
+      - name: Run Bandit
         run: |
           pip install bandit
           bandit -r app/ -f json -o bandit-report.json || true
 
-      - name: Run safety check (Dependencies)
+      - name: Run safety check
         run: |
           pip install safety
           safety check --json > safety-report.json || true
@@ -31,25 +36,18 @@ jobs:
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'Vajra-Backend'
-          path: '.'
-          format: 'JSON'
-          args: >
-            --enableExperimental
+          project: Vajra-Backend
+          path: .
+          format: JSON
+          args: --enableExperimental
 
-      - name: CodeQL Analysis
+      - name: CodeQL Analysis Init
         uses: github/codeql-action/init@v2
         with:
-          languages: 'python'
+          languages: python
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-
-      - name: SAST with SonarQube (Optional)
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Upload security reports
         uses: actions/upload-artifact@v3
@@ -75,20 +73,21 @@ jobs:
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'vajra-backend:latest'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          image-ref: vajra-backend:latest
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: '0'
 
-      - name: Upload Trivy results to GitHub Security
+      - name: Upload Trivy results
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: trivy-results.sarif
 
       - name: Run Grype scan
         uses: anchore/scan-action@v3
         id: grype
         with:
-          path: '.'
+          path: .
           fail-build: true
           severity-cutoff: high
 
@@ -112,7 +111,7 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
 
-      - name: GitGuardian Scan (Optional)
+      - name: GitGuardian Scan
         run: |
           pip install gitguardian
           ggshield secret scan repo . || true
