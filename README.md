@@ -21,6 +21,18 @@ Vajra Kavach is a government-ready emergency response platform designed for rapi
 - 300+ simultaneous incident handling capacity
 - Low false-acceptance biometric authentication
 
+## 🎯 Project Intent
+
+Vajra Kavach is built to reduce emergency response times and improve coordination between citizens and public safety agencies. The platform focuses on secure activation, accurate location sharing, and reliable dispatch workflows—while maintaining compliance with regional privacy and security standards.
+
+## 🧭 Visual Overview
+
+### Workflow (Citizen → Dispatch → Response)
+![Workflow Overview](docs/images/workflow.svg)
+
+### Testing & Assurance Pipeline
+![Testing Overview](docs/images/testing.svg)
+
 ### Key Features
 - **Instant Emergency SOS** - One-button activation with automatic emergency services dispatch
 - **Biometric Security** - Fingerprint authentication with cryptographic hashing (no raw biometric storage)

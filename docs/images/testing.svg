@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420">
+  <defs>
+    <style>
+      .box { fill: #f6f8fa; stroke: #1f2937; stroke-width: 2; rx: 12; }
+      .title { font: 600 18px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { stroke: #1f2937; stroke-width: 2; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#1f2937" />
+    </marker>
+  </defs>
+
+  <rect x="60" y="60" width="200" height="70" class="box" />
+  <text x="160" y="98" text-anchor="middle" class="title">Unit Tests</text>
+  <text x="160" y="120" text-anchor="middle" class="text">Core services</text>
+
+  <rect x="300" y="60" width="220" height="70" class="box" />
+  <text x="410" y="98" text-anchor="middle" class="title">Integration Tests</text>
+  <text x="410" y="120" text-anchor="middle" class="text">API + database</text>
+
+  <rect x="560" y="60" width="200" height="70" class="box" />
+  <text x="660" y="98" text-anchor="middle" class="title">Security Scans</text>
+  <text x="660" y="120" text-anchor="middle" class="text">SAST + deps</text>
+
+  <rect x="800" y="60" width="180" height="70" class="box" />
+  <text x="890" y="98" text-anchor="middle" class="title">Load Tests</text>
+  <text x="890" y="120" text-anchor="middle" class="text">Stress & soak</text>
+
+  <rect x="1020" y="60" width="140" height="70" class="box" />
+  <text x="1090" y="98" text-anchor="middle" class="title">Reports</text>
+  <text x="1090" y="120" text-anchor="middle" class="text">Benchmarks</text>
+
+  <line x1="260" y1="95" x2="300" y2="95" class="arrow" />
+  <line x1="520" y1="95" x2="560" y2="95" class="arrow" />
+  <line x1="760" y1="95" x2="800" y2="95" class="arrow" />
+  <line x1="980" y1="95" x2="1020" y2="95" class="arrow" />
+
+  <text x="600" y="220" text-anchor="middle" class="text">CI gates enforce coverage, security thresholds, and performance budgets.</text>
+  <text x="600" y="250" text-anchor="middle" class="text">Results are published with versioned reports for audit readiness.</text>
+</svg>
