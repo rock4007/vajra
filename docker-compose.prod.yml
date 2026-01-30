@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vajra-backend
+    command: gunicorn -w 4 -b 0.0.0.0:8009 main:app
+    ports:
+      - "8009:8009"
+    env_file:
+      - prod.env
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    networks:
+      - vajra-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: vajra-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - backend
+    networks:
+      - vajra-net
+    restart: unless-stopped
+
+networks:
+  vajra-net:
+    driver: bridge
+
+volumes:
+  logs:
+  data:

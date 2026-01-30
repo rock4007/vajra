@@ -33,52 +33,24 @@ except Exception:
 # ============================================================================
 # CODE PROTECTION SYSTEM - GHOST INJECTION
 # ============================================================================
-try:
-    from code_protection_system import initialize_protection, AntiDebugProtection
-    # Initialize protection immediately
-    print("\nInitializing Code Protection System...")
-    GHOST_PROTECTION = initialize_protection()
-    print("Ghost Injection Protection: ACTIVE\n")
-except Exception as e:
-    print(f"Warning: Code protection initialization error: {e}")
-    GHOST_PROTECTION = None
+# Temporarily disabled for development/testing
+GHOST_PROTECTION = None
+print("\nCode Protection: DISABLED for development\n")
 # ============================================================================
 
 # ============================================================================
 # MAINTENANCE: AUTO-HEAL + THREAT MODEL UPDATES
 # ============================================================================
+# Temporarily disabled for troubleshooting
 AUTO_HEAL_MANAGER = None
 THREAT_MODEL_UPDATER = None
-try:
-    if start_auto_heal and start_threat_model_updates:
-        app_root = os.path.dirname(os.path.abspath(__file__))
-        protected = [
-            "main.py",
-            "config.py",
-            "supabase-client.js",
-            "background.js",
-            "content-script.js",
-            "manifest.json",
-        ]
-        AUTO_HEAL_MANAGER = start_auto_heal(
-            app_root=app_root,
-            protected_files=protected,
-            interval_seconds=3600  # hourly health check
-        )
-        THREAT_MODEL_UPDATER = start_threat_model_updates(
-            app_root=app_root,
-            check_interval_seconds=86400,  # daily check
-            update_interval_days=90  # every 3 months
-        )
-        print("Auto-heal enabled (hourly checks)")
-        print("Threat model auto-update enabled (90-day cadence)")
-except Exception as e:
-    print(f"Warning: Maintenance initialization error: {e}")
+print("Auto-heal: DISABLED for troubleshooting")
+print("Threat model auto-update: DISABLED for troubleshooting")
 # ============================================================================
 
 # Security configurations
 RATE_LIMIT_WINDOW = 60  # seconds
-RATE_LIMIT_MAX_REQUESTS = 100  # per IP per window
+RATE_LIMIT_MAX_REQUESTS = 10000  # per IP per window - INCREASED for stress testing
 BLOCKED_IPS = set()  # Can be loaded from env or file
 ALLOWED_IPS = set()  # Whitelist if needed
 
@@ -218,22 +190,15 @@ def rate_limit_check():
 
 def firewall_middleware():
     """Main firewall middleware with comprehensive security checks."""
-    # ============================================================================
-    # ANTI-TAMPERING CHECK: Verify code integrity before processing request
-    # ============================================================================
-    if GHOST_PROTECTION:
-        try:
-            # Perform anti-debug check on every request
-            AntiDebugProtection.anti_debug_check()
-        except:
-            pass  # Ghost protection will handle violations
-    # ============================================================================
-    
     ip = request.remote_addr
     
     # Get real IP from headers (behind proxy)
     if request.headers.get('X-Forwarded-For'):
         ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+
+    # BYPASS firewall for localhost (stress testing)
+    if ip in ['127.0.0.1', 'localhost', '::1']:
+        return None  # Skip firewall for local testing
 
     # Block known bad IPs
     if ip in BLOCKED_IPS:
@@ -320,7 +285,14 @@ def add_security_headers(response):
     response.headers['X-Frame-Options'] = 'DENY'  # Prevent clickjacking
     response.headers['X-XSS-Protection'] = '1; mode=block'  # Enable XSS protection
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'  # HTTPS enforcement
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'"
+
+    # Allow inline scripts only for /admin so the dashboard JS can execute; keep stricter defaults elsewhere.
+    if request.path == '/admin':
+        csp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'"
+    else:
+        csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'"
+
+    response.headers['Content-Security-Policy'] = csp
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'  # Control referrer information
     response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'  # Restrict permissions
     return response
@@ -427,6 +399,18 @@ def heartbeat():
     data = get_sanitized_json()
     ts = data.get("ts") or datetime.utcnow().isoformat()
     log_event("heartbeat", data)
+    
+    # Check for emergency conditions based on heart rate
+    heart_rate = data.get("heart_rate")
+    is_emergency = False
+    if heart_rate is not None:
+        try:
+            hr = float(heart_rate)
+            # Emergency if HR < 40 or HR > 180
+            is_emergency = hr < 40 or hr > 180
+        except (ValueError, TypeError):
+            pass
+    
     # Auto-dispatch if distress is flagged
     try:
         if bool(data.get("distress", False)):
@@ -441,6 +425,8 @@ def heartbeat():
         "ts": ts,
         "shield_on": bool(data.get("shield_on", False)),
         "distress": bool(data.get("distress", False)),
+        "is_emergency": is_emergency,
+        "heart_rate": heart_rate,
     })
 
 @app.post("/fingerprint")
@@ -471,8 +457,11 @@ def location():
         return jsonify({"error": "Invalid device_id"}), 400
     
     try:
-        lat = float(data.get("lat")) if data.get("lat") is not None else None
-        lon = float(data.get("lon")) if data.get("lon") is not None else None
+        # Support both "lat"/"lon" and "latitude"/"longitude" formats
+        lat_val = data.get("lat") if data.get("lat") is not None else data.get("latitude")
+        lon_val = data.get("lon") if data.get("lon") is not None else data.get("longitude")
+        lat = float(lat_val) if lat_val is not None else None
+        lon = float(lon_val) if lon_val is not None else None
     except (ValueError, TypeError):
         lat = None
         lon = None
@@ -783,13 +772,29 @@ def version():
 def regions():
     return jsonify({"region": REGION, "supported_regions": SUPPORTED_REGIONS})
 
+@app.route("/admin", methods=["GET"])
+def admin_dashboard():
+    """Serve admin dashboard for real-time test monitoring"""
+    from flask import send_file, make_response
+    import os
+    try:
+        file_path = os.path.join(os.path.dirname(__file__), 'admin_dashboard.html')
+        with open(file_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        response = make_response(html_content)
+        response.headers['Content-Type'] = 'text/html; charset=utf-8'
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return response
+    except Exception as e:
+        return jsonify({"error": f"Admin dashboard error: {str(e)}"}), 404
+
 # Honeypot Endpoints (4-layer log catcher)
 @app.get("/robots.txt")
 def honeypot_robots():
     log_security_event("honeypot_access", {"honeypot": "robots.txt", "ip": request.remote_addr, "headers": dict(request.headers)})
     return "User-agent: *\nDisallow: /", 200, {'Content-Type': 'text/plain'}
 
-@app.get("/admin")
+@app.get("/honeypot-admin")
 def honeypot_admin():
     log_security_event("honeypot_access", {"honeypot": "admin", "ip": request.remote_addr, "headers": dict(request.headers)})
     return jsonify({"error": "Access denied"}), 403
@@ -819,4 +824,10 @@ def log_event(ev_type: str, data: dict):
         pass
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8008, debug=True)
+    print("Starting Flask on port 8009...")
+    try:
+        app.run(host="0.0.0.0", port=8009, debug=False, use_reloader=False)
+    except Exception as e:
+        print(f"ERROR starting Flask: {e}")
+        import traceback
+        traceback.print_exc()

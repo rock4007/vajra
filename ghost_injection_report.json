@@ -1,30 +1,30 @@
 {
-  "timestamp": "2026-01-29T17:46:37.948733",
+  "timestamp": "2026-01-29T19:37:02.670790",
   "event": "GHOST_INJECTION_TRIGGERED",
   "violations": [
     "CRITICAL: File modified: D:\\VajraBackend\\main.py",
-    "  Original: 0a394fea6fcc154baa6b9aa7336f58f174794d78ccbe443bf9a8b33453b4c30e",
-    "  Current:  d18db1683721ced555cd303dc5958d22147ae462c9e5e9767be27a91f04d548f"
+    "  Original: f1f2a41d3facf8dd13eb532910dd7a793c2886264da7c286d49fad650310d89a",
+    "  Current:  dd517856d5114372ae768f376bb40eae9c3bb724fbb7d7166c6ddf52a2dd0772"
   ],
   "all_violations": [
     {
-      "timestamp": "2026-01-29T17:46:37.947666",
+      "timestamp": "2026-01-29T19:37:02.669354",
       "message": "CRITICAL: File modified: D:\\VajraBackend\\main.py"
     },
     {
-      "timestamp": "2026-01-29T17:46:37.948304",
-      "message": "  Original: 0a394fea6fcc154baa6b9aa7336f58f174794d78ccbe443bf9a8b33453b4c30e"
+      "timestamp": "2026-01-29T19:37:02.669820",
+      "message": "  Original: f1f2a41d3facf8dd13eb532910dd7a793c2886264da7c286d49fad650310d89a"
     },
     {
-      "timestamp": "2026-01-29T17:46:37.948519",
-      "message": "  Current:  d18db1683721ced555cd303dc5958d22147ae462c9e5e9767be27a91f04d548f"
+      "timestamp": "2026-01-29T19:37:02.670173",
+      "message": "  Current:  dd517856d5114372ae768f376bb40eae9c3bb724fbb7d7166c6ddf52a2dd0772"
     }
   ],
   "protected_files": [
     "D:\\VajraBackend\\main.py"
   ],
   "system_info": {
-    "pid": 30548,
+    "pid": 23560,
     "cwd": "D:\\VajraBackend",
     "python_version": "3.14.2 (tags/v3.14.2:df79316, Dec  5 2025, 17:18:21) [MSC v.1944 64 bit (AMD64)]"
   }

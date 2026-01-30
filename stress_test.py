@@ -13,33 +13,61 @@ from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import statistics
 
-BASE_URL = "http://127.0.0.1:8008"
+BASE_URL = "http://127.0.0.1:8009"
 
 # Test scenarios
 SCENARIOS = {
     "normal_activity": {
-        "weight": 40,  # 40% of tests
+        "weight": 20,  # 20% of tests
         "description": "Normal walking, no threats"
     },
     "high_g_attack": {
-        "weight": 20,  # 20% of tests
+        "weight": 15,  # 15% of tests
         "description": "Sudden high-G impact (push/fall)"
     },
     "distress_heartbeat": {
-        "weight": 15,  # 15% of tests
+        "weight": 10,  # 10% of tests
         "description": "Abnormal breathing/panic"
     },
     "manual_sos": {
-        "weight": 10,  # 10% of tests
+        "weight": 8,  # 8% of tests
         "description": "User pressed SOS button"
     },
     "combined_attack": {
-        "weight": 10,  # 10% of tests
+        "weight": 8,  # 8% of tests
         "description": "High-G + Distress + Manual SOS"
     },
     "false_positive": {
-        "weight": 5,  # 5% of tests
+        "weight": 4,  # 4% of tests
         "description": "Edge cases (running, jumping)"
+    },
+    "rape_scenario": {
+        "weight": 6,  # 6% of tests
+        "description": "Sexual assault - high distress, physical contact"
+    },
+    "accident_scenario": {
+        "weight": 6,  # 6% of tests
+        "description": "Vehicle accident - sudden deceleration, impact"
+    },
+    "fire_scenario": {
+        "weight": 6,  # 6% of tests
+        "description": "Fire emergency - smoke, heat, panic"
+    },
+    "jogging_scenario": {
+        "weight": 5,  # 5% of tests
+        "description": "Jogging - high activity, normal heartbeat"
+    },
+    "bar_scenario": {
+        "weight": 5,  # 5% of tests
+        "description": "Bar/club - social setting, potential harassment"
+    },
+    "dance_scenario": {
+        "weight": 5,  # 5% of tests
+        "description": "Dancing - high activity in crowded environment"
+    },
+    "war_scenario": {
+        "weight": 2,  # 2% of tests
+        "description": "War zone - extreme conditions, explosions"
     }
 }
 
@@ -330,26 +358,231 @@ def scenario_false_positive(test_num):
     """Edge cases that shouldn't trigger alerts"""
     device_id = generate_device_id(test_num)
     start_time = time.time()
-    
+
     try:
         configure_device(device_id)
         lat, lon, _ = random.choice(LOCATIONS)
         send_location(device_id, lat, lon)
-        
+
         # Running/jumping motion (below threshold)
-        send_sensor_data(device_id, 
-                        random.uniform(10, 15), 
-                        random.uniform(-10, 10), 
+        send_sensor_data(device_id,
+                        random.uniform(10, 15),
+                        random.uniform(-10, 10),
                         random.uniform(15, 20))
-        
+
         # Normal heartbeat
         send_heartbeat(device_id, distress=False)
-        
+
         elapsed = time.time() - start_time
         log_result("false_positive", True, elapsed, alerted=False)
-        
+
     except Exception as e:
         log_result("false_positive", False, time.time() - start_time)
+
+
+def scenario_rape_scenario(test_num):
+    """Sexual assault scenario - high distress, physical contact"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Physical contact and restraint
+        send_sensor_data(device_id,
+                        random.uniform(5, 15),
+                        random.uniform(-10, 10),
+                        random.uniform(10, 25))
+        time.sleep(0.1)
+
+        # Extreme distress heartbeat
+        send_heartbeat(device_id, distress=True)
+        time.sleep(0.1)
+
+        # Manual SOS (victim trying to call for help)
+        send_sos(device_id, force=True)
+
+        elapsed = time.time() - start_time
+        log_result("rape_scenario", True, elapsed, alerted=True)
+
+    except Exception as e:
+        log_result("rape_scenario", False, time.time() - start_time)
+
+
+def scenario_accident_scenario(test_num):
+    """Vehicle accident scenario - sudden deceleration, impact"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Sudden deceleration/impact (car crash)
+        send_sensor_data(device_id,
+                        random.uniform(-30, -15),
+                        random.uniform(-25, -10),
+                        random.uniform(15, 35))
+        time.sleep(0.1)
+
+        # Injury distress
+        send_heartbeat(device_id, distress=True)
+
+        elapsed = time.time() - start_time
+        log_result("accident_scenario", True, elapsed, alerted=True)
+
+    except Exception as e:
+        log_result("accident_scenario", False, time.time() - start_time)
+
+
+def scenario_fire_scenario(test_num):
+    """Fire emergency scenario - smoke, heat, panic"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Panic movement (trying to escape)
+        send_sensor_data(device_id,
+                        random.uniform(-5, 5),
+                        random.uniform(-5, 5),
+                        random.uniform(8, 12))
+        time.sleep(0.1)
+
+        # Smoke inhalation distress
+        send_heartbeat(device_id, distress=True)
+        time.sleep(0.1)
+
+        # Emergency SOS
+        send_sos(device_id, force=True)
+
+        elapsed = time.time() - start_time
+        log_result("fire_scenario", True, elapsed, alerted=True)
+
+    except Exception as e:
+        log_result("fire_scenario", False, time.time() - start_time)
+
+
+def scenario_jogging_scenario(test_num):
+    """Jogging scenario - high activity, normal heartbeat"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Jogging motion (rhythmic, higher activity)
+        send_sensor_data(device_id,
+                        random.uniform(-3, 3),
+                        random.uniform(-3, 3),
+                        random.uniform(9, 11))
+
+        # Normal heartbeat (elevated but not distress)
+        send_heartbeat(device_id, distress=False)
+
+        elapsed = time.time() - start_time
+        log_result("jogging_scenario", True, elapsed, alerted=False)
+
+    except Exception as e:
+        log_result("jogging_scenario", False, time.time() - start_time)
+
+
+def scenario_bar_scenario(test_num):
+    """Bar/club scenario - social setting, potential harassment"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Social interaction movement
+        send_sensor_data(device_id,
+                        random.uniform(-2, 2),
+                        random.uniform(-2, 2),
+                        random.uniform(9.5, 10.5))
+
+        # Normal heartbeat initially
+        send_heartbeat(device_id, distress=False)
+        time.sleep(0.1)
+
+        # Potential harassment - sudden distress
+        if random.random() < 0.3:  # 30% chance of incident
+            send_heartbeat(device_id, distress=True)
+            send_sos(device_id, force=True)
+            log_result("bar_scenario", True, time.time() - start_time, alerted=True)
+        else:
+            elapsed = time.time() - start_time
+            log_result("bar_scenario", True, elapsed, alerted=False)
+
+    except Exception as e:
+        log_result("bar_scenario", False, time.time() - start_time)
+
+
+def scenario_dance_scenario(test_num):
+    """Dancing scenario - high activity in crowded environment"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Dance movement (rhythmic, varied)
+        send_sensor_data(device_id,
+                        random.uniform(-8, 8),
+                        random.uniform(-8, 8),
+                        random.uniform(8, 12))
+
+        # Normal heartbeat (music, excitement)
+        send_heartbeat(device_id, distress=False)
+
+        elapsed = time.time() - start_time
+        log_result("dance_scenario", True, elapsed, alerted=False)
+
+    except Exception as e:
+        log_result("dance_scenario", False, time.time() - start_time)
+
+
+def scenario_war_scenario(test_num):
+    """War zone scenario - extreme conditions, explosions"""
+    device_id = generate_device_id(test_num)
+    start_time = time.time()
+
+    try:
+        configure_device(device_id)
+        lat, lon, _ = random.choice(LOCATIONS)
+        send_location(device_id, lat, lon)
+
+        # Explosion impact (extreme G-forces)
+        send_sensor_data(device_id,
+                        random.uniform(-50, 50),
+                        random.uniform(-50, 50),
+                        random.uniform(20, 80))
+        time.sleep(0.1)
+
+        # Extreme distress
+        send_heartbeat(device_id, distress=True)
+        time.sleep(0.1)
+
+        # Emergency SOS
+        send_sos(device_id, force=True)
+
+        elapsed = time.time() - start_time
+        log_result("war_scenario", True, elapsed, alerted=True)
+
+    except Exception as e:
+        log_result("war_scenario", False, time.time() - start_time)
 
 
 SCENARIO_FUNCTIONS = {
@@ -359,6 +592,13 @@ SCENARIO_FUNCTIONS = {
     "manual_sos": scenario_manual_sos,
     "combined_attack": scenario_combined_attack,
     "false_positive": scenario_false_positive,
+    "rape_scenario": scenario_rape_scenario,
+    "accident_scenario": scenario_accident_scenario,
+    "fire_scenario": scenario_fire_scenario,
+    "jogging_scenario": scenario_jogging_scenario,
+    "bar_scenario": scenario_bar_scenario,
+    "dance_scenario": scenario_dance_scenario,
+    "war_scenario": scenario_war_scenario,
 }
 
 

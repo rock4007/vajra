@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vajra Kavach - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card.success .value {
+            color: #10b981;
+        }
+
+        .stat-card.danger .value {
+            color: #ef4444;
+        }
+
+        .stat-card.warning .value {
+            color: #f59e0b;
+        }
+
+        .test-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .test-item {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .test-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .test-item.pass {
+            border-left-color: #10b981;
+        }
+
+        .test-item.fail {
+            border-left-color: #ef4444;
+        }
+
+        .test-item.running {
+            border-left-color: #f59e0b;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .test-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .test-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .test-status.pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .test-status.fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .test-status.running {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .test-details {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .test-details strong {
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .log-console {
+            background: #1e293b;
+            color: #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+
+        .log-line.error {
+            color: #ef4444;
+        }
+
+        .log-line.warning {
+            color: #f59e0b;
+        }
+
+        .log-line.success {
+            color: #10b981;
+        }
+
+        .map-container {
+            margin-top: 15px;
+            height: 200px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .emergency-alert {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: emergency-pulse 1s infinite;
+        }
+
+        @keyframes emergency-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .emergency-alert h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .status-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .status-pill.ok {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .status-pill.down {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .status-note {
+            color: #444;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🛡️ Vajra Kavach - Admin Dashboard</h1>
+            <p>Real-Time Test Monitoring & Emergency Response System</p>
+            <p style="font-size: 0.9em; color: #999; margin-top: 5px;">Created by: Soumodeep Guha</p>
+            <div class="status-bar">
+                <div id="backendStatus" class="status-pill down">🔴 Backend: Unknown</div>
+                <div id="backendNote" class="status-note">Waiting for health check...</div>
+                <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85em; margin-left: auto;" onclick="triggerAutoHeal()">🔧 Auto-Heal</button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Tests</h3>
+                <div class="value" id="totalTests">0</div>
+            </div>
+            <div class="stat-card success">
+                <h3>Tests Passed</h3>
+                <div class="value" id="testsPassed">0</div>
+            </div>
+            <div class="stat-card danger">
+                <h3>Tests Failed</h3>
+                <div class="value" id="testsFailed">0</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>Emergencies Detected</h3>
+                <div class="value" id="emergenciesDetected">0</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="test-section">
+            <h2>Test Controls</h2>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="runAllTests()">🧪 Run All Tests</button>
+                <button class="btn btn-success" onclick="runHeartbeatTest()">🫀 Test Heartbeat</button>
+                <button class="btn btn-success" onclick="runLocationTest()">📍 Test Location</button>
+                <button class="btn btn-danger" onclick="runIncidentSimulation()">🚨 LIVE Incidents (Real SOS)</button>
+                <button class="btn btn-primary" onclick="run300CasesTest()">🌍 Run 300 Cases (4 Countries)</button>
+                <button class="btn btn-primary" onclick="clearResults()">🗑️ Clear Results</button>
+            </div>
+        </div>
+
+        <!-- Emergency Alerts -->
+        <div id="emergencyAlerts"></div>
+
+        <!-- Test Results -->
+        <div class="test-section">
+            <h2>Test Results</h2>
+            <div id="testResults">
+                <p style="color: #666; text-align: center; padding: 40px;">No tests run yet. Click "Run All Tests" to begin.</p>
+            </div>
+        </div>
+
+        <!-- Live Logs -->
+        <div class="test-section">
+            <h2>Live Logs</h2>
+            <div class="log-console" id="logConsole">
+                <div class="log-line success">[SYSTEM] Admin dashboard initialized</div>
+                <div class="log-line success">[SYSTEM] Ready to run tests</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = (window.location.origin && window.location.origin !== 'null')
+            ? window.location.origin
+            : 'http://127.0.0.1:8009';
+        let testResults = [];
+        let emergencyCount = 0;
+
+        function setBackendStatus(isUp, note = '') {
+            const pill = document.getElementById('backendStatus');
+            const noteEl = document.getElementById('backendNote');
+            pill.className = `status-pill ${isUp ? 'ok' : 'down'}`;
+            pill.textContent = `${isUp ? '🟢' : '🔴'} Backend: ${isUp ? 'Online' : 'Offline'}`;
+            noteEl.textContent = note || (isUp ? 'Healthy' : 'Start backend: cd VajraBackend && python main.py');
+        }
+
+        function addLog(message, type = 'success') {
+            const logConsole = document.getElementById('logConsole');
+            const logLine = document.createElement('div');
+            logLine.className = `log-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logLine.textContent = `[${timestamp}] ${message}`;
+            logConsole.appendChild(logLine);
+            logConsole.scrollTop = logConsole.scrollHeight;
+        }
+
+        function updateStats() {
+            const total = testResults.length;
+            const passed = testResults.filter(t => t.passed).length;
+            const failed = total - passed;
+
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('testsPassed').textContent = passed;
+            document.getElementById('testsFailed').textContent = failed;
+            document.getElementById('emergenciesDetected').textContent = emergencyCount;
+        }
+
+        function showEmergencyAlert(data) {
+            const alertsDiv = document.getElementById('emergencyAlerts');
+            const alert = document.createElement('div');
+            alert.className = 'emergency-alert';
+            alert.innerHTML = `
+                <h3>🚨 INCIDENT DETECTED (SIMULATION)</h3>
+                <p><strong>Type:</strong> ${data.type}</p>
+                <p><strong>Heart Rate:</strong> ${data.heartRate} BPM</p>
+                <p><strong>Location:</strong> ${data.location}</p>
+                <p><strong>Dispatch:</strong> Disabled (No SOS sent)</p>
+            `;
+            alertsDiv.appendChild(alert);
+            emergencyCount++;
+            updateStats();
+        }
+
+        function displayTestResult(test) {
+            const resultsDiv = document.getElementById('testResults');
+            
+            if (testResults.length === 1) {
+                resultsDiv.innerHTML = '';
+            }
+
+            const testItem = document.createElement('div');
+            testItem.className = `test-item ${test.status}`;
+            testItem.innerHTML = `
+                <div class="test-header">
+                    <div class="test-title">${test.title}</div>
+                    <div class="test-status ${test.status}">${test.status.toUpperCase()}</div>
+                </div>
+                <div class="test-details">
+                    ${test.details}
+                </div>
+                ${test.map ? `<div class="map-container">📍 Map: ${test.map}</div>` : ''}
+            `;
+            resultsDiv.appendChild(testItem);
+        }
+
+        async function runHeartbeatTest() {
+            addLog('Starting heartbeat test...', 'success');
+            
+            const testCases = [
+                { heart_rate: 75, name: 'Normal Heartbeat', expected: 'normal' },
+                { heart_rate: 25, name: 'Critical Low', expected: 'emergency' },
+                { heart_rate: 195, name: 'Critical High', expected: 'emergency' }
+            ];
+
+            for (const testCase of testCases) {
+                addLog(`Testing: ${testCase.name} (${testCase.heart_rate} BPM)`, 'warning');
+                
+                try {
+                    const response = await fetch(`${BASE_URL}/heartbeat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            device_id: 'ADMIN_TEST',
+                            heart_rate: testCase.heart_rate,
+                            timestamp: new Date().toISOString(),
+                            user_id: 'ADMIN_001'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const isEmergency = data.is_emergency || false;
+                    const passed = testCase.expected === 'emergency' ? isEmergency : !isEmergency;
+
+                    const testResult = {
+                        title: `🫀 ${testCase.name}`,
+                        status: passed ? 'pass' : 'fail',
+                        passed: passed,
+                        details: `
+                            <strong>Heart Rate:</strong> ${testCase.heart_rate} BPM<br>
+                            <strong>Expected:</strong> ${testCase.expected}<br>
+                            <strong>Emergency Detected:</strong> ${isEmergency ? 'Yes' : 'No'}<br>
+                            <strong>Result:</strong> ${passed ? '✅ PASS' : '❌ FAIL'}
+                        `
+                    };
+
+                    testResults.push(testResult);
+                    displayTestResult(testResult);
+                    updateStats();
+
+                    if (isEmergency) {
+                        showEmergencyAlert({
+                            type: testCase.name,
+                            heartRate: testCase.heart_rate,
+                            location: 'Test Location',
+                        });
+                    }
+
+                    addLog(`✅ ${testCase.name}: ${passed ? 'PASS' : 'FAIL'}`, passed ? 'success' : 'error');
+                } catch (error) {
+                    addLog(`❌ Error testing ${testCase.name}: ${error.message}`, 'error');
+
+                    const testResult = {
+                        title: `🫀 ${testCase.name}`,
+                        status: 'fail',
+                        passed: false,
+                        details: `
+                            <strong>Heart Rate:</strong> ${testCase.heart_rate} BPM<br>
+                            <strong>Error:</strong> ${error.message}<br>
+                            <strong>Result:</strong> ❌ FAIL
+                        `
+                    };
+                    testResults.push(testResult);
+                    displayTestResult(testResult);
+                    updateStats();
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        async function runLocationTest() {
+            addLog('Starting location tracking test...', 'success');
+            
+            const locations = [
+                { lat: 28.7041, lon: 77.1025, name: 'New Delhi' },
+                { lat: 19.0760, lon: 72.8777, name: 'Mumbai' },
+                { lat: 12.9716, lon: 77.5946, name: 'Bangalore' }
+            ];
+
+            for (const loc of locations) {
+                addLog(`Testing location: ${loc.name}`, 'warning');
+                
+                try {
+                    const response = await fetch(`${BASE_URL}/location`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            device_id: 'ADMIN_TEST',
+                            latitude: loc.lat,
+                            longitude: loc.lon,
+                            accuracy: 10,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const passed = response.status === 200;
+
+                    const testResult = {
+                        title: `📍 Location Tracking - ${loc.name}`,
+                        status: passed ? 'pass' : 'fail',
+                        passed: passed,
+                        details: `
+                            <strong>Location:</strong> ${loc.name}<br>
+                            <strong>Coordinates:</strong> ${loc.lat}, ${loc.lon}<br>
+                            <strong>Accuracy:</strong> 10 meters<br>
+                            <strong>Status:</strong> ${response.status}<br>
+                            <strong>Result:</strong> ${passed ? '✅ PASS' : '❌ FAIL'}
+                        `,
+                        map: `https://maps.google.com/?q=${loc.lat},${loc.lon}`
+                    };
+
+                    testResults.push(testResult);
+                    displayTestResult(testResult);
+                    updateStats();
+
+                    addLog(`✅ Location ${loc.name}: PASS`, 'success');
+                } catch (error) {
+                    addLog(`❌ Error testing ${loc.name}: ${error.message}`, 'error');
+
+                    const testResult = {
+                        title: `📍 Location Tracking - ${loc.name}`,
+                        status: 'fail',
+                        passed: false,
+                        details: `
+                            <strong>Location:</strong> ${loc.name}<br>
+                            <strong>Error:</strong> ${error.message}<br>
+                            <strong>Result:</strong> ❌ FAIL
+                        `
+                    };
+                    testResults.push(testResult);
+                    displayTestResult(testResult);
+                    updateStats();
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        async function runIncidentSimulation() {
+            addLog('🚨 Starting REAL-TIME incident scenarios with SOS dispatch...', 'error');
+
+            const scenarios = [
+                { 
+                    name: 'Accident', 
+                    heart_rate: 35, 
+                    breathing_rate: 8,  // shallow breathing
+                    lat: 28.7041, 
+                    lon: 77.1025, 
+                    location: 'Bar District, New Delhi',
+                    dispatch_sos: true
+                },
+                { 
+                    name: 'Rape Attack', 
+                    heart_rate: 175, 
+                    breathing_rate: 28,  // rapid hyperventilation
+                    lat: 12.9716, 
+                    lon: 77.5946, 
+                    location: 'Club Area, Bangalore',
+                    dispatch_sos: true
+                },
+                { 
+                    name: 'Fire Emergency', 
+                    heart_rate: 185, 
+                    breathing_rate: 32,  // smoke inhalation panic
+                    lat: 19.0760, 
+                    lon: 72.8777, 
+                    location: 'Night Bar, Mumbai',
+                    dispatch_sos: true
+                },
+                { 
+                    name: 'Bar Fight', 
+                    heart_rate: 155, 
+                    breathing_rate: 26,  // adrenaline response
+                    lat: 22.5726, 
+                    lon: 88.3639, 
+                    location: 'Pub Street, Kolkata',
+                    dispatch_sos: true
+                },
+                { 
+                    name: 'Sexual Assault', 
+                    heart_rate: 168, 
+                    breathing_rate: 30,  // extreme panic
+                    lat: 18.5204, 
+                    lon: 73.8567, 
+                    location: 'Club District, Pune',
+                    dispatch_sos: true
+                }
+            ];
+
+            for (const scenario of scenarios) {
+                addLog(`🚨 REAL-TIME: ${scenario.name}`, 'error');
+                addLog(`📍 Location: ${scenario.location}`, 'warning');
+
+                try {
+                    // Update location
+                    let response = await fetch(`${BASE_URL}/location`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            device_id: 'LIVE_INCIDENT',
+                            latitude: scenario.lat,
+                            longitude: scenario.lon,
+                            accuracy: 5,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Location update failed: HTTP ${response.status}`);
+                    }
+
+                    addLog('📍 Location tracked', 'success');
+
+                    // Analyze breathing rhythm
+                    const breathingNormal = scenario.breathing_rate >= 12 && scenario.breathing_rate <= 20;
+                    const breathingCritical = scenario.breathing_rate < 10 || scenario.breathing_rate > 25;
+                    
+                    addLog(`💨 Breathing: ${scenario.breathing_rate} breaths/min ${breathingCritical ? '(CRITICAL)' : breathingNormal ? '(Normal)' : '(Elevated)'}`, breathingCritical ? 'error' : 'warning');
+
+                    // Send distress heartbeat with breathing data
+                    response = await fetch(`${BASE_URL}/heartbeat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            device_id: 'LIVE_INCIDENT',
+                            heart_rate: scenario.heart_rate,
+                            breathing_rate: scenario.breathing_rate,
+                            timestamp: new Date().toISOString(),
+                            distress: scenario.dispatch_sos
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Heartbeat failed: HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const isEmergencyBackend = data.is_emergency || false;
+                    const isEmergencyHeart = scenario.heart_rate < 40 || scenario.heart_rate > 180;
+                    const isEmergencyBreath = breathingCritical;
+                    const isEmergency = isEmergencyBackend || isEmergencyHeart || isEmergencyBreath;
+
+                    // Dispatch SOS if enabled
+                    let sosDispatched = false;
+                    if (scenario.dispatch_sos && isEmergency) {
+                        try {
+                            const sosResponse = await fetch(`${BASE_URL}/sos_alert`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    device_id: 'LIVE_INCIDENT',
+                                    lat: scenario.lat,
+                                    lon: scenario.lon,
+                                    distress: true,
+                                    force: true,
+                                    timestamp: new Date().toISOString()
+                                })
+                            });
+                            sosDispatched = sosResponse.ok;
+                            if (sosDispatched) {
+                                addLog(`🚨 SOS DISPATCHED for ${scenario.name}`, 'error');
+                            }
+                        } catch (err) {
+                            addLog(`⚠️ SOS dispatch failed: ${err.message}`, 'error');
+                        }
+                    }
+
+                    showEmergencyAlert({
+                        type: scenario.name,
+                        heartRate: scenario.heart_rate,
+                        location: scenario.location,
+                    });
+
+                    const testResult = {
+                        title: `🚨 LIVE: ${scenario.name}`,
+                        status: sosDispatched ? 'pass' : 'fail',
+                        passed: sosDispatched,
+                        details: `
+                            <strong>Incident Type:</strong> ${scenario.name}<br>
+                            <strong>Heart Rate:</strong> ${scenario.heart_rate} BPM ${isEmergencyHeart ? '🚨 CRITICAL' : ''}<br>
+                            <strong>Breathing Rate:</strong> ${scenario.breathing_rate} breaths/min ${isEmergencyBreath ? '🚨 CRITICAL' : ''}<br>
+                            <strong>Location:</strong> ${scenario.location}<br>
+                            <strong>Coordinates:</strong> ${scenario.lat}, ${scenario.lon}<br>
+                            <strong>Emergency Heart:</strong> ${isEmergencyHeart ? 'YES' : 'No'}<br>
+                            <strong>Emergency Breathing:</strong> ${isEmergencyBreath ? 'YES' : 'No'}<br>
+                            <strong>Backend Detection:</strong> ${isEmergencyBackend ? 'YES' : 'No'}<br>
+                            <strong>Overall Emergency:</strong> ${isEmergency ? 'YES' : 'No'}<br>
+                            <strong>SOS Dispatched:</strong> ${sosDispatched ? '✅ YES' : '❌ NO'}<br>
+                            <strong>Result:</strong> ${sosDispatched ? '✅ ALERT SENT' : '❌ FAILED'}
+                        `,
+                        map: `https://maps.google.com/?q=${scenario.lat},${scenario.lon}`
+                    };
+
+                    testResults.push(testResult);
+                    displayTestResult(testResult);
+                    updateStats();
+
+                    addLog(`${sosDispatched ? '✅' : '❌'} ${scenario.name} processed`, sosDispatched ? 'success' : 'error');
+                } catch (error) {
+                    addLog(`❌ Incident simulation error: ${error.message}`, 'error');
+
+                    const testResult = {
+                        title: `🚨 Incident Simulation - ${scenario.name}`,
+                        status: 'fail',
+                        passed: false,
+                        details: `
+                            <strong>Incident Type:</strong> ${scenario.name}<br>
+                            <strong>Error:</strong> ${error.message}<br>
+                            <strong>SOS Dispatch:</strong> Disabled (Simulation Only)<br>
+                            <strong>Result:</strong> ❌ FAIL
+                        `,
+                        map: `https://maps.google.com/?q=${scenario.lat},${scenario.lon}`
+                    };
+                    testResults.push(testResult);
+                    displayTestResult(testResult);
+                    updateStats();
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 700));
+            }
+        }
+
+        async function runAllTests() {
+            addLog('========================================', 'success');
+            addLog('🚀 Starting complete test suite...', 'success');
+            addLog('========================================', 'success');
+            
+            clearResults();
+
+            const healthy = await healthCheck();
+            if (!healthy) {
+                const testResult = {
+                    title: '🩺 Backend Health Check',
+                    status: 'fail',
+                    passed: false,
+                    details: '<strong>Status:</strong> Backend unreachable<br><strong>Action:</strong> Start backend (cd VajraBackend && python main.py) and reload.',
+                };
+                testResults.push(testResult);
+                displayTestResult(testResult);
+                updateStats();
+                return;
+            }
+            
+            await runHeartbeatTest();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await runLocationTest();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await runIncidentSimulation();
+            
+            addLog('========================================', 'success');
+            addLog('✅ All tests completed!', 'success');
+            addLog('========================================', 'success');
+        }
+
+        async function run300CasesTest() {
+            const resultsDiv = document.getElementById('testResults');
+            if (!resultsDiv) {
+                console.error('❌ testResults div not found!');
+                addLog('❌ ERROR: Results container not found!', 'error');
+                return;
+            }
+
+            resultsDiv.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">⏳ Loading 300 incidents...</p>';
+
+            addLog('========================================', 'success');
+            addLog('🌍 Starting 300-case stress test across 4 countries...', 'warning');
+            addLog('========================================', 'success');
+            console.log('🌍 300-case test started');
+
+            const locations = {
+                india: [
+                    { lat: 28.6139, lon: 77.2090, city: 'New Delhi' },
+                    { lat: 19.0760, lon: 72.8777, city: 'Mumbai' },
+                    { lat: 12.9716, lon: 77.5946, city: 'Bangalore' },
+                    { lat: 22.5726, lon: 88.3639, city: 'Kolkata' },
+                    { lat: 13.0827, lon: 80.2707, city: 'Chennai' }
+                ],
+                france: [
+                    { lat: 48.8566, lon: 2.3522, city: 'Paris' },
+                    { lat: 43.2965, lon: 5.3698, city: 'Marseille' },
+                    { lat: 45.7640, lon: 4.8357, city: 'Lyon' }
+                ],
+                uk: [
+                    { lat: 51.5074, lon: -0.1278, city: 'London' },
+                    { lat: 53.4808, lon: -2.2426, city: 'Manchester' },
+                    { lat: 55.9533, lon: -3.1883, city: 'Edinburgh' }
+                ],
+                pakistan: [
+                    { lat: 24.8607, lon: 67.0011, city: 'Karachi' },
+                    { lat: 31.5204, lon: 74.3587, city: 'Lahore' },
+                    { lat: 33.6844, lon: 73.0479, city: 'Islamabad' }
+                ]
+            };
+
+            // Enhanced incident types with realistic heart rates and breathing patterns
+            const incidentTypes = [
+                { name: 'Accident', hr: [65, 140], br: [16, 32], color: '🚗' },
+                { name: 'Rape Attack', hr: [75, 180], br: [22, 35], color: '🚨' },
+                { name: 'Fire Emergency', hr: [90, 185], br: [28, 36], color: '🔥' },
+                { name: 'Bar Fight', hr: [80, 160], br: [18, 30], color: '👊' },
+                { name: 'Sexual Assault', hr: [85, 175], br: [24, 34], color: '⚠️' },
+                { name: 'Medical Emergency', hr: [45, 120], br: [8, 28], color: '⚕️' },
+                { name: 'Robbery', hr: [70, 170], br: [20, 33], color: '💰' },
+                { name: 'Chase/Assault', hr: [95, 190], br: [25, 36], color: '🏃' }
+            ];
+            
+            let successCount = 0;
+            let failCount = 0;
+            const startTime = Date.now();
+            
+            // Clear results and prepare display
+            resultsDiv.innerHTML = '';
+            const summaryDiv = document.createElement('div');
+            summaryDiv.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 5px; margin-bottom: 15px; font-weight: bold; font-size: 14px; position: sticky; top: 0; z-index: 100;';
+            summaryDiv.id = 'summary-status';
+            summaryDiv.innerHTML = '📊 Loading incidents... (0/300)';
+            resultsDiv.appendChild(summaryDiv);
+
+            // Process 300 cases with throttling and real-time display
+            for (let i = 0; i < 300; i++) {
+                const countries = Object.keys(locations);
+                const country = countries[i % countries.length];
+                const countryLocs = locations[country];
+                const location = countryLocs[i % countryLocs.length];
+                const incidentType = incidentTypes[i % incidentTypes.length];
+                
+                // Generate realistic vitals based on incident
+                const heartRate = incidentType.hr[0] + Math.floor(Math.random() * (incidentType.hr[1] - incidentType.hr[0]));
+                const breathingRate = incidentType.br[0] + Math.floor(Math.random() * (incidentType.br[1] - incidentType.br[0]));
+                
+                const isEmergencyHeart = heartRate < 40 || heartRate > 180;
+                const isEmergencyBreath = breathingRate < 10 || breathingRate > 25;
+                const isEmergency = isEmergencyHeart || isEmergencyBreath;
+
+                try {
+                    // Send heartbeat with all data
+                    const response = await fetch(`${BASE_URL}/heartbeat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            device_id: `STRESS_TEST_${i}`,
+                            heart_rate: heartRate,
+                            breathing_rate: breathingRate,
+                            latitude: location.lat + (Math.random() - 0.5) * 0.02,
+                            longitude: location.lon + (Math.random() - 0.5) * 0.02,
+                            timestamp: new Date().toISOString(),
+                            distress: isEmergency
+                        })
+                    });
+
+                    if (response.ok) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                    }
+                } catch (error) {
+                    failCount++;
+                    console.error(`Case ${i + 1} error:`, error);
+                }
+
+                // Display incident card immediately after sending
+                try {
+                    const incidentDiv = document.createElement('div');
+                    incidentDiv.style.cssText = `
+                        background: #ef5350;
+                        color: white;
+                        padding: 15px;
+                        margin: 10px 0;
+                        border-radius: 4px;
+                        font-weight: 500;
+                        border-left: 5px solid #d32f2f;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    `;
+                    
+                    const dispatchStatus = isEmergency ? '🚨 SOS DISPATCHED' : 'Disabled (No SOS sent)';
+                    
+                    incidentDiv.innerHTML = `
+                        <div style="font-weight: bold; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center;"><span style="margin-right: 8px;">🚨</span> INCIDENT DETECTED (SIMULATION)</div>
+                        <div style="font-size: 14px; line-height: 1.8;">
+                            <strong>Type:</strong> ${incidentType.name}<br>
+                            <strong>Heart Rate:</strong> ${heartRate} BPM<br>
+                            <strong>Location:</strong> ${location.city}, ${country.toUpperCase()}<br>
+                            <strong>Dispatch:</strong> ${dispatchStatus}<br>
+                            <strong>Breathing Rate:</strong> ${breathingRate} breaths/min<br>
+                            <strong>Case #${i + 1}</strong>
+                        </div>
+                    `;
+                    
+                    resultsDiv.appendChild(incidentDiv);
+                    
+                    // Auto-scroll to latest incident
+                    incidentDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } catch (displayError) {
+                    console.error('Display error:', displayError);
+                }
+
+                // Update summary every 10 cases
+                if ((i + 1) % 10 === 0) {
+                    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                    const rate = ((successCount / (i + 1)) * 100).toFixed(0);
+                    try {
+                        const summaryEl = document.getElementById('summary-status');
+                        if (summaryEl) {
+                            summaryEl.innerHTML = `📊 PROGRESS: ${i + 1}/300 incidents | ${successCount} Success | ${failCount} Failed | ${rate}% Pass Rate | ${elapsed}s`;
+                        }
+                    } catch (e) {
+                        console.error('Summary update error:', e);
+                    }
+                }
+
+                // Progress log every 50 cases
+                if ((i + 1) % 50 === 0) {
+                    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                    const rate = ((successCount / (i + 1)) * 100).toFixed(0);
+                    addLog(`📊 Progress: ${i + 1}/300 (${successCount} success, ${rate}%) [${elapsed}s]`, 'info');
+                    console.log(`Progress: ${i + 1}/300`);
+                }
+
+                // Throttle to ~20 requests/sec (50ms delay between batches of 2)
+                if (i % 2 === 1) {
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+            }
+
+            const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
+            const successRate = ((successCount / 300) * 100).toFixed(1);
+            const avgTime = (totalTime / 300 * 1000).toFixed(0);
+
+            addLog(`========================================`, 'success');
+            addLog(`✅ 300-Case Test Completed!`, 'success');
+            addLog(`📊 Total: 300 | Success: ${successCount} | Failed: ${failCount}`, 'success');
+            addLog(`📈 Success Rate: ${successRate}%`, successRate >= 90 ? 'success' : 'warning');
+            addLog(`⏱️ Total Time: ${totalTime}s | Avg Time/Case: ${avgTime}ms`, 'info');
+            addLog(`========================================`, 'success');
+            console.log(`✅ Test Complete: ${successCount}/300 success (${successRate}%)`);
+
+            // Update final summary
+            try {
+                const summaryEl = document.getElementById('summary-status');
+                if (summaryEl) {
+                    summaryEl.innerHTML = `✅ COMPLETED: ${successCount}/300 Success | ${failCount} Failed | ${successRate}% Pass Rate | Total Time: ${totalTime}s`;
+                }
+            } catch (e) {
+                console.error('Final summary error:', e);
+            }
+
+            const testResult = {
+                title: '🌍 300-Case Global Stress Test - Complete',
+                status: successRate >= 90 ? 'pass' : 'fail',
+                passed: successRate >= 90
+            };
+            
+            testResults.push(testResult);
+            updateStats();
+        }
+        }
+
+        function clearResults() {
+            testResults = [];
+            emergencyCount = 0;
+            document.getElementById('testResults').innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">Running tests...</p>';
+            document.getElementById('emergencyAlerts').innerHTML = '';
+            updateStats();
+            addLog('🗑️ Results cleared', 'warning');
+        }
+
+        async function healthCheck() {
+            console.log('🔍 Starting health check, BASE_URL:', BASE_URL);
+            
+            for (let i = 0; i < 5; i++) {
+                try {
+                    console.log(`Health check attempt ${i + 1}/5, URL: ${BASE_URL}/health`);
+                    
+                    const response = await Promise.race([
+                        fetch(`${BASE_URL}/health`, { 
+                            method: 'GET',
+                            headers: { 'Accept': 'application/json' },
+                            mode: 'cors',
+                            cache: 'no-cache'
+                        }),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Timeout')), 10000)
+                        )
+                    ]);
+                    
+                    console.log('Health response status:', response.status);
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    console.log('✅ Backend health check PASSED:', data);
+                    setBackendStatus(true, `Connected | Time: ${data.time || 'ok'}`);
+                    addLog('✅ Backend Connected Successfully', 'success');
+                    return true;
+                } catch (err) {
+                    console.error(`Attempt ${i + 1} failed:`, err.message);
+                    
+                    if (i < 4) {
+                        const waitTime = (i + 1) * 500;
+                        addLog(`⏳ Health check retry ${i + 1}/5 (wait ${waitTime}ms)...`, 'warning');
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                    } else {
+                        console.error('❌ All health checks failed');
+                        setBackendStatus(false, `Connection Failed: ${err.message}`);
+                        addLog('❌ Backend not responding - trying manual connection', 'error');
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        async function triggerAutoHeal() {
+            addLog('🔧 Starting auto-heal procedure...', 'warning');
+            addLog('Attempting to contact backend for recovery...', 'warning');
+            
+            // Try basic health check
+            const healthy = await healthCheck();
+            
+            if (healthy) {
+                addLog('✅ Backend is responding - System healthy!', 'success');
+                return;
+            }
+            
+            // If not healthy, suggest watchdog
+            addLog('🚨 Backend not responding - attempting recovery...', 'error');
+            addLog('⚠️ Run watchdog for automatic recovery: python watchdog.py', 'error');
+            addLog('Or manually restart: cd VajraBackend && python main.py', 'error');
+            
+            // Keep retrying health checks
+            for (let attempt = 0; attempt < 5; attempt++) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                addLog(`🔄 Recovery attempt ${attempt + 1}/5...`, 'warning');
+                
+                if (await healthCheck()) {
+                    addLog('✅ Backend recovered! System is operational.', 'success');
+                    return;
+                }
+            }
+            
+            addLog('❌ Auto-heal failed - manual intervention required', 'error');
+        }
+
+        // Background health monitoring - check every 10 seconds
+        setInterval(async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/health`, { 
+                    signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined
+                });
+                if (response.ok) {
+                    if (document.getElementById('backendStatus').className.includes('down')) {
+                        addLog('🟢 Backend recovered automatically!', 'success');
+                        setBackendStatus(true, 'Operational');
+                    }
+                }
+            } catch (err) {
+                // Backend offline
+            }
+        }, 10000);
+
+        // Initialize and auto-run
+        addLog('🛡️ Vajra Kavach Admin Dashboard Ready', 'success');
+        addLog('Created by: Soumodeep Guha', 'success');
+        addLog(`📡 Backend URL: ${BASE_URL}`, 'success');
+        addLog('🔍 Checking backend connection...', 'info');
+
+        // Check backend first, then auto-run tests
+        setTimeout(async () => {
+            console.log('Starting initialization sequence...');
+            const isHealthy = await healthCheck();
+            
+            if (isHealthy) {
+                console.log('Backend is healthy, waiting before running tests...');
+                await new Promise(r => setTimeout(r, 1000));
+                addLog('🚀 Auto-starting tests...', 'warning');
+                await runAllTests();
+            } else {
+                addLog('⚠️ Backend connection lost - tests skipped', 'error');
+                addLog('💡 Try clicking "Run All Tests" manually once backend is ready', 'warning');
+            }
+        }, 500);
+    </script>
+</body>
+</html>

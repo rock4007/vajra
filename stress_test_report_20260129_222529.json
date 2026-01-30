@@ -1,0 +1,116 @@
+{
+  "test_config": {
+    "total_tests": 50,
+    "backend_url": "http://127.0.0.1:8009",
+    "start_time": "2026-01-29T22:25:17.013510",
+    "end_time": "2026-01-29T22:25:29.082770",
+    "duration_seconds": 12.06926
+  },
+  "results": {
+    "successful": 44,
+    "failed": 6,
+    "success_rate_pct": 88.0,
+    "alerts_triggered": 31,
+    "throughput_tests_per_sec": 4.1427560596092885
+  },
+  "response_times": {
+    "average": 0.803839030265808,
+    "median": 0.05180394649505615,
+    "min": 0.0038487911224365234,
+    "max": 5.305323839187622,
+    "stdev": 1.8148840440895069
+  },
+  "scenarios": {
+    "accident_scenario": {
+      "count": 3,
+      "success": 3,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 3
+    },
+    "jogging_scenario": {
+      "count": 2,
+      "success": 2,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 0
+    },
+    "distress_heartbeat": {
+      "count": 5,
+      "success": 5,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 5
+    },
+    "dance_scenario": {
+      "count": 2,
+      "success": 2,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 0
+    },
+    "normal_activity": {
+      "count": 11,
+      "success": 5,
+      "failed": 6,
+      "avg_response_time": 0,
+      "alerts": 0
+    },
+    "false_positive": {
+      "count": 3,
+      "success": 3,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 0
+    },
+    "fire_scenario": {
+      "count": 3,
+      "success": 3,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 3
+    },
+    "high_g_attack": {
+      "count": 7,
+      "success": 7,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 7
+    },
+    "war_scenario": {
+      "count": 1,
+      "success": 1,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 1
+    },
+    "manual_sos": {
+      "count": 4,
+      "success": 4,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 4
+    },
+    "bar_scenario": {
+      "count": 2,
+      "success": 2,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 1
+    },
+    "combined_attack": {
+      "count": 4,
+      "success": 4,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 4
+    },
+    "rape_scenario": {
+      "count": 3,
+      "success": 3,
+      "failed": 0,
+      "avg_response_time": 0,
+      "alerts": 3
+    }
+  }
+}

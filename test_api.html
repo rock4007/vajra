@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .output {
+            background: white;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            border: 1px solid #ddd;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>API Test Suite</h1>
+    <button class="test-btn" onclick="testHealth()">Test Health</button>
+    <button class="test-btn" onclick="testHeartbeat()">Test Heartbeat</button>
+    <button class="test-btn" onclick="testLocation()">Test Location</button>
+    <button class="test-btn" onclick="testEmergency()">Test Emergency</button>
+    <div id="output" class="output">Ready...</div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8008';
+        const output = document.getElementById('output');
+
+        function log(msg, isError = false) {
+            const time = new Date().toLocaleTimeString();
+            const prefix = isError ? '[ERROR]' : '[OK]';
+            const color = isError ? 'error' : 'success';
+            output.innerHTML += `<span class="${color}">${time} ${prefix}: ${msg}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function testHealth() {
+            output.innerHTML = '';
+            log('Testing /health endpoint...');
+            try {
+                const res = await fetch(`${BASE_URL}/health`);
+                const data = await res.json();
+                log(`Health check passed: ${JSON.stringify(data)}`);
+            } catch (e) {
+                log(`Health check failed: ${e.message}`, true);
+            }
+        }
+
+        async function testHeartbeat() {
+            output.innerHTML = '';
+            log('Testing /heartbeat endpoint...');
+            try {
+                const body = {
+                    device_id: 'TEST',
+                    heart_rate: 25,
+                    timestamp: new Date().toISOString()
+                };
+                log(`Sending: ${JSON.stringify(body)}`);
+                
+                const res = await fetch(`${BASE_URL}/heartbeat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (!res.ok) {
+                    log(`HTTP Error: ${res.status} ${res.statusText}`, true);
+                    return;
+                }
+                
+                const data = await res.json();
+                log(`Response: ${JSON.stringify(data)}`);
+                if (data.is_emergency) {
+                    log('✅ Emergency detected correctly!');
+                } else {
+                    log('⚠️ Emergency NOT detected', true);
+                }
+            } catch (e) {
+                log(`Heartbeat test failed: ${e.message}`, true);
+            }
+        }
+
+        async function testLocation() {
+            output.innerHTML = '';
+            log('Testing /location endpoint...');
+            try {
+                const body = {
+                    device_id: 'TEST',
+                    latitude: 28.7041,
+                    longitude: 77.1025,
+                    accuracy: 10,
+                    timestamp: new Date().toISOString()
+                };
+                log(`Sending: ${JSON.stringify(body)}`);
+                
+                const res = await fetch(`${BASE_URL}/location`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (!res.ok) {
+                    log(`HTTP Error: ${res.status} ${res.statusText}`, true);
+                    return;
+                }
+                
+                const data = await res.json();
+                log(`Response: ${JSON.stringify(data)}`);
+            } catch (e) {
+                log(`Location test failed: ${e.message}`, true);
+            }
+        }
+
+        async function testEmergency() {
+            output.innerHTML = '';
+            log('Testing emergency scenario...');
+            try {
+                // Set location
+                let body = {
+                    device_id: 'EMERGENCY_TEST',
+                    latitude: 28.7041,
+                    longitude: 77.1025,
+                    accuracy: 5,
+                    timestamp: new Date().toISOString()
+                };
+                log('Setting location...');
+                let res = await fetch(`${BASE_URL}/location`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) throw new Error(`Location failed: ${res.status}`);
+                log('✅ Location set');
+
+                // Send critical heartbeat
+                body = {
+                    device_id: 'EMERGENCY_TEST',
+                    heart_rate: 22,
+                    timestamp: new Date().toISOString(),
+                    distress: true
+                };
+                log('Sending critical heartbeat...');
+                res = await fetch(`${BASE_URL}/heartbeat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) throw new Error(`Heartbeat failed: ${res.status}`);
+                
+                const data = await res.json();
+                log(`Response: ${JSON.stringify(data)}`);
+                if (data.is_emergency) {
+                    log('✅ EMERGENCY DETECTED!');
+                } else {
+                    log('⚠️ Emergency NOT detected', true);
+                }
+            } catch (e) {
+                log(`Emergency test failed: ${e.message}`, true);
+            }
+        }
+
+        // Auto test on load
+        window.addEventListener('load', () => {
+            log('Page loaded. Click buttons to run tests.');
+        });
+    </script>
+</body>
+</html>
