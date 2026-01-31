@@ -1,0 +1,172 @@
+{
+  "timestamp": "2026-01-29T20:41:19.602569",
+  "tests": [
+    {
+      "name": "Backend Health",
+      "status": "[FAIL] Backend Health",
+      "details": {
+        "error": "HTTPConnectionPool(host='127.0.0.1', port=8009): Max retries exceeded with url: /health (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8009): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+      }
+    },
+    {
+      "name": "Heart Rhythm Detection",
+      "status": "[PASS] Heart Rhythm Detection",
+      "details": {
+        "normal_rhythm": {
+          "heart_rate": 58.2,
+          "bpm": 58,
+          "rhythm": "normal",
+          "ecg_signal": [
+            1.0817851904699864,
+            0.9609218871228271,
+            1.0943639823468603,
+            1.053800733052932,
+            1.012986228873159,
+            0.9444199873190665,
+            0.9391571130678397,
+            0.9218939493552483,
+            1.0470026849427732,
+            0.9642629798267759
+          ],
+          "timestamp": "2026-01-29T20:41:23.653584",
+          "confidence": 0.98
+        },
+        "abnormal_rhythm": {
+          "heart_rate": 119.8,
+          "bpm": 120,
+          "rhythm": "abnormal",
+          "ecg_signal": [
+            0.9363251965942567,
+            0.9372972983045362,
+            1.0235689337968552,
+            0.9514279171159953,
+            0.9465193944064305,
+            0.9951542115478178,
+            1.032040592820166,
+            1.0321677662650255,
+            1.040736294111547,
+            1.0984772835341983
+          ],
+          "timestamp": "2026-01-29T20:41:23.654016",
+          "confidence": 0.95
+        }
+      }
+    },
+    {
+      "name": "Geolocation Verification",
+      "status": "[PASS] Geolocation Verification",
+      "details": {
+        "location_tests": [
+          {
+            "location": {
+              "name": "Downtown",
+              "lat": 37.7749,
+              "lon": -122.4194,
+              "city": "San Francisco"
+            },
+            "accuracy": 0.9718676341511101,
+            "status": "[PASS]"
+          },
+          {
+            "location": {
+              "name": "Northside",
+              "lat": 37.7849,
+              "lon": -122.4094,
+              "city": "San Francisco"
+            },
+            "accuracy": 0.9628357567043556,
+            "status": "[PASS]"
+          },
+          {
+            "location": {
+              "name": "Mission District",
+              "lat": 37.7599,
+              "lon": -122.4148,
+              "city": "San Francisco"
+            },
+            "accuracy": 0.9748503236057996,
+            "status": "[PASS]"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SOS Alert Dispatch",
+      "status": "[FAIL] SOS Alert Dispatch",
+      "details": {
+        "error": "HTTPConnectionPool(host='127.0.0.1', port=8009): Max retries exceeded with url: /sos_alert (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8009): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+      }
+    },
+    {
+      "name": "Emergency Services Dispatch",
+      "status": "[FAIL] Emergency Services Dispatch",
+      "details": {
+        "error": "list index out of range"
+      }
+    },
+    {
+      "name": "WhatsApp Alerts",
+      "status": "[PASS] WhatsApp Alerts",
+      "details": {
+        "whatsapp_alerts": [
+          {
+            "member": {
+              "name": "John Doe",
+              "phone": "+1234567890",
+              "whatsapp": "+1234567890",
+              "email": "john@example.com"
+            },
+            "message": "[EMERGENCY SOS ALERT]\n\nLocation: Downtown, San Francisco\nDevice: TEST_DEVICE_001\nTime: 2026-01-29 20:41:29\n\nHeart Rhythm: ABNORMAL (120 bpm)\nStatus: ACTIVE SOS\n\nEmergency Services Dispatched:\n- Fire Department: ETA 4 min\n- Ambulance: ETA 5 min\n- Police: ETA 4 min\n\nIMMEDIATE ACTION REQUIRED\nContact emergency services or the victim",
+            "status": "[SENT]",
+            "timestamp": "2026-01-29T20:41:29.709952"
+          },
+          {
+            "member": {
+              "name": "Jane Smith",
+              "phone": "+0987654321",
+              "whatsapp": "+0987654321",
+              "email": "jane@example.com"
+            },
+            "message": "[EMERGENCY SOS ALERT]\n\nLocation: Downtown, San Francisco\nDevice: TEST_DEVICE_001\nTime: 2026-01-29 20:41:29\n\nHeart Rhythm: ABNORMAL (120 bpm)\nStatus: ACTIVE SOS\n\nEmergency Services Dispatched:\n- Fire Department: ETA 4 min\n- Ambulance: ETA 5 min\n- Police: ETA 4 min\n\nIMMEDIATE ACTION REQUIRED\nContact emergency services or the victim",
+            "status": "[SENT]",
+            "timestamp": "2026-01-29T20:41:29.710646"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Emergency Calls",
+      "status": "[PASS] Emergency Calls",
+      "details": {
+        "call_alerts": [
+          {
+            "member": {
+              "name": "John Doe",
+              "phone": "+1234567890",
+              "whatsapp": "+1234567890",
+              "email": "john@example.com"
+            },
+            "call_script": "\n            Automated SOS Call:\n            \"This is an emergency alert from Vajra Safety System. \n            An emergency has been detected for your contact. \n            Location: Downtown, San Francisco\n            Emergency services have been dispatched.\n            Press 1 to acknowledge or stay on the line for operator.\"\n            ",
+            "status": "[CONNECTED]",
+            "duration_seconds": 45,
+            "timestamp": "2026-01-29T20:41:30.712273"
+          },
+          {
+            "member": {
+              "name": "Jane Smith",
+              "phone": "+0987654321",
+              "whatsapp": "+0987654321",
+              "email": "jane@example.com"
+            },
+            "call_script": "\n            Automated SOS Call:\n            \"This is an emergency alert from Vajra Safety System. \n            An emergency has been detected for your contact. \n            Location: Downtown, San Francisco\n            Emergency services have been dispatched.\n            Press 1 to acknowledge or stay on the line for operator.\"\n            ",
+            "status": "[CONNECTED]",
+            "duration_seconds": 45,
+            "timestamp": "2026-01-29T20:41:30.712731"
+          }
+        ]
+      }
+    }
+  ],
+  "results": {},
+  "summary": {}
+}
