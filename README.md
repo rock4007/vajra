@@ -1,52 +1,65 @@
 
 # VAJRA — Shakti Kavach
 
-VAJRA (Shakti Kavach) is a defensive cybersecurity framework designed to support critical infrastructure protection, incident response readiness, and secure operations for government and public-sector deployments.
+VAJRA (Shakti Kavach) is a defensive security and emergency-response framework focused on real-time biometric monitoring, automated incident response, and auditable evidence collection for controlled or government environments.
 
 Executive Summary
-- Purpose: Provide a hardened, audit-ready codebase and operational playbooks to support detection, containment, recovery, and sustained secure operations.
-- Audience: Government security teams, SOC operators, system integrators, and authorized maintainers.
+- Purpose: Hardened, auditable backend and operational playbooks for detection, containment, and secure operations.
+- Audience: SOC operators, incident responders, system integrators, and authorised maintainers.
 
 Key Objectives
-- Deliver repeatable deployment artifacts and configuration templates for controlled environments.
-- Enforce secure defaults and documented procedures for testing and production rollouts.
-- Maintain an auditable change history and compliance posture suitable for regulated environments.
+- Provide repeatable deployment artifacts and secure defaults for testing and production.
+- Maintain auditable change history and enforce review workflows for production changes.
 
-Repository Structure (high level)
-- `VajraBackend/` — Backend services and API code.
-- `VajraLightWeb/`, `VajraKavachApp_template/` — Frontend and integration templates.
-- `CloudServer/` — Cloud deployment artifacts and container definitions.
-- `docs/` (recommended) — Policies, playbooks, and audit artefacts (create and maintain).
+Repository layout (high level)
+- VajraBackend/ — Backend services and APIs (this directory).
+- VajraLightWeb/, VajraKavachApp_template/ — Frontend and integration templates.
+- CloudServer/ — Cloud/container deployment artifacts.
+- docs/ — Policies, playbooks, and audit artifacts.
 
-Getting Started (recommended minimal steps)
-1. Review this README and any component-level READMEs before any execution.
-2. Validate in an isolated test environment (VM or air-gapped network) with limited privileges.
-3. Ensure all credentials, secrets, and environment-specific configs are managed via secret stores and not checked into source control.
+Quick start (developer/operator)
+1. Clone repo and enter backend folder:
 
-Security Controls and Best Practices
-- Access: Restrict repository access to organization-approved accounts using org-level controls and MFA.
-- Secrets: Use a secret management solution (Vault, cloud KMS). Do not store secrets in this repo.
-- Testing: Run static analysis, dependency scanning, and container image scans before deployment.
-- Change Management: All changes must be reviewed and approved through PR with required approvers.
+   git clone https://github.com/rock4007/-VAJRA-Shakti-Kavach.git
+   cd VajraBackend
 
-Compliance and Governance
-- This repository is maintained to support compliance with applicable government standards and organizational policies.
-- Maintain an audit trail for all configuration and policy changes; use signed commits and tagged releases for production artifacts.
+2. Create and activate a Python virtualenv, then install deps:
 
-Support and Reporting
-- For operational issues or incident reporting, follow the organizational incident response procedure and notify the project custodian listed in internal documentation.
+   python -m venv .venv
+   .venv\Scripts\activate  # Windows
+   pip install -r requirements.txt
+
+3. Start development server:
+
+   python main.py
+
+Security notes
+- Keep secrets in a proper secret store; never commit credentials.
+- Enforce TLS for untrusted networks and RBAC for operational accounts.
+
+Advanced Roadmap (concise)
+- Persistence & Durability: Persist audit logs and heart-history to a durable store (Postgres/Redis + WAL).
+- Multi-instance Coordination: Use Redis or a message bus for system-wide SYSTEM_ENABLED and locks.
+- Realtime Delivery: Add SSE/WebSocket layer to push heart updates to clients (reduce polling latency).
+- Device Integration: Add pluggable device drivers and stable drivers for integrated biometric hardware.
+- Anomaly Detection: Expand ML models (SIEM) for multi-sensor correlation and fewer false positives.
+- Evidence Vault: Hardened, signed evidence ingestion with chain-of-custody and secure offsite replication.
+- Production Hardening: Deploy behind a WSGI server (gunicorn/uvicorn), add health probes, autoscaling, and orchestrator-managed secrets.
+- Secure CI/CD: Signed releases, dependency scanning, SBOMs, and automated security gating.
+- Operational UX: Improve admin UI with role-based controls, audit filtering, and scoped API keys.
+- Testing & E2E: Expand deterministic headless telemetry harnesses and CI smoke tests.
+- Privacy/Compliance: Configurable data retention policies, encryption-at-rest, and audit export features.
 
 Contributing
-- Contributions must follow the project's contribution policy and pass code review and security checks. Contact the project custodian for contributor onboarding.
+- Send signed PRs with tests and security review; maintainers review and approve per org process.
 
 License
-- See the `LICENSE` file in the repository root, or contact the project custodian for licensing clarification.
+- See LICENSE in repository root.
 
 Contact
-- Project custodian and escalation contacts are stored in internal documentation — do not publish contact details publicly in this repository.
-
-Change Log
-- 2026-01-31: Initial government-compliance oriented README added.
+- Operational contact details are stored in internal documentation and not in this public repo.
 
 ---
-This branch contains a focused documentation update; the maintainers should review before merging into the canonical branch.
+Prepared succinctly for operational stakeholders.
+
+VAJRA — Shakti Kavach
