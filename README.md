@@ -1,79 +1,96 @@
-# 🛡️ VAJRA – Shakti Kavach
 
-### Prototype Platform for Secure Incident Capture, Evidence Integrity & Emergency Response
+# VAJRA — Shakti Kavach
 
-[![iDEX – Defence Innovation](https://img.shields.io/badge/iDEX-Defence%20Innovation-blue)]
-[![Status](https://img.shields.io/badge/Status-Prototype-orange)]
-[![Python](https://img.shields.io/badge/Python-3.8+-green)]
-[![Flask](https://img.shields.io/badge/Backend-Flask-red)]
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)]
+VAJRA (Shakti Kavach) is a defensive cybersecurity framework designed to support critical infrastructure protection, incident response readiness, and secure operations for government and public-sector deployments.
 
-> **VAJRA – Shakti Kavach** is a **prototype defence-oriented safety and incident-support system** designed to enable **secure incident capture, evidence integrity, and response visibility** in controlled and high-risk environments.
+## Recent Changes (2026-02-03)
+- Backend: added `/heart_status` consolidated monitoring endpoint and improved SSE publishing for real-time heart-rate and admin events.
+- Frontend: improved `app.html` to prefer SSE (`/heartrate/stream`) with a polling fallback and added auto-show of the heart monitor UI.
+- Admin UI: fixed `admin_test_dashboard.html` to avoid overwriting loaded alerts (`alertsData` seeded only when empty) and added SSE-driven SOS alert display with quick action endpoints (`/admin/alerts/<case_id>/ack`, `/admin/alerts/<case_id>/case`).
+- Tests & scripts: added smoke-test scripts for SSE verification and health-checks under `scripts/`.
 
-> ⚠️ This project is a **pilot-stage prototype**, intended for evaluation under government and defence innovation programs such as **iDEX (MoD, India)**.
+If you maintain a fork or mirror, please pull these changes and run the smoke tests described in `VajraBackend/README.md` before deploying to any shared environment.
+
+Executive Summary
+- Purpose: Provide a hardened, audit-ready codebase and operational playbooks to support detection, containment, recovery, and sustained secure operations.
+- Audience: Government security teams, SOC operators, system integrators, and authorized maintainers.
+
+Key Objectives
+- Deliver repeatable deployment artifacts and configuration templates for controlled environments.
+- Enforce secure defaults and documented procedures for testing and production rollouts.
+- Maintain an auditable change history and compliance posture suitable for regulated environments.
+
+Repository Structure (high level)
+- `VajraBackend/` — Backend services and API code.
+- `VajraLightWeb/`, `VajraKavachApp_template/` — Frontend and integration templates.
+- `CloudServer/` — Cloud deployment artifacts and container definitions.
+- `docs/` (recommended) — Policies, playbooks, and audit artefacts (create and maintain).
+
+Getting Started (recommended minimal steps)
+1. Review this README and any component-level READMEs before any execution.
+2. Validate in an isolated test environment (VM or air-gapped network) with limited privileges.
+3. Ensure all credentials, secrets, and environment-specific configs are managed via secret stores and not checked into source control.
+
+Security Controls and Best Practices
+- Access: Restrict repository access to organization-approved accounts using org-level controls and MFA.
+- Secrets: Use a secret management solution (Vault, cloud KMS). Do not store secrets in this repo.
+- Testing: Run static analysis, dependency scanning, and container image scans before deployment.
+- Change Management: All changes must be reviewed and approved through PR with required approvers.
+
+Compliance and Governance
+- This repository is maintained to support compliance with applicable government standards and organizational policies.
+- Maintain an audit trail for all configuration and policy changes; use signed commits and tagged releases for production artifacts.
+
+Support and Reporting
+- For operational issues or incident reporting, follow the organizational incident response procedure and notify the project custodian listed in internal documentation.
+
+Contributing
+- Contributions must follow the project's contribution policy and pass code review and security checks. Contact the project custodian for contributor onboarding.
+# VAJRA — Shakti Kavach
+
+
+## Quick Start (developer)
+1. Create and activate a Python virtual environment, then install dependencies:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Start locally (development):
+
+```powershell
+docker-compose up -d
+# Backend available at http://localhost:8008
+```
+
+3. For Kubernetes deploys, see `k8s/` and `docs/README_DEPLOY.md`.
+
+## Deployment Overview
+- Local development: `docker-compose.yml` (quick start)
+- Kubernetes: manifests in `k8s/` (Deployment, Service, Ingress, HPA)
+- Cloud: CI workflows and Terraform under `.github/workflows/` and `terraform/` (see `docs/README_DEPLOY_CLOUD.md`)
+
+## Security highlights
+- Do not commit secrets; use a secret manager (Vault, cloud KMS).
+- Enforce TLS for all network endpoints in production.
+- Use a persistent, auditable store for evidence and rotate keys regularly.
+
+## Contributing
+- Work in topic branches and submit pull requests for review.
+- Include tests and a security review for production-impacting changes.
+
+## Where to find more
+- Component READMEs: e.g., `VajraBackend/README.md`
+- Deployment docs and provider-specific instructions: `docs/`
+- CI/CD workflows: `.github/workflows/`
+
+## License
+See `LICENSE` in the repository root.
 
 ---
-
-## 🎯 Problem Context
-
-Across defence establishments, internal security units, and critical infrastructure environments, incident handling often faces:
-
-- Delayed acknowledgment of incidents  
-- Risk of evidence loss or tampering  
-- Limited audit visibility across response layers  
-- Inadequate tooling for rapid, privacy-respecting incident capture  
-
-VAJRA – Shakti Kavach focuses on **process integrity and response enablement**, not enforcement or adjudication.
-
----
-
-## 🧩 System Overview
-
-The platform follows a **modular architecture**, consisting of **one mobile/edge component and a secure backend**, with future governance tooling planned for pilot deployments.
-
----
-
-### 1️⃣ Shakti Kavach – Mobile / Edge Application (Prototype)
-
-A lightweight incident-capture application intended for **controlled pilots**.
-
-**Capabilities**
-- Manual emergency (SOS) trigger
-- Contextual data capture (audio / sensor-assisted)
-- Local encryption before transmission
-- Operable in low or intermittent connectivity
-
-**Explicitly Out of Scope**
-- No FIR registration  
-- No automated accusations  
-- No public disclosure  
-- No autonomous law enforcement actions  
-
----
-
-### 2️⃣ VAJRA Backend – Secure Ingest & Logging (Prototype)
-
-A backend service responsible for **receiving, time-stamping, and logging incident data**.
-
-**Core Functions**
-- Secure ingest API
-- Cryptographic hashing for evidence integrity
-- Append-only logging model
-- Role-based admin access (development / pilot use)
-
-> Current implementation demonstrates system flow using a **local development backend (localhost)**.
-
----
-
-### 3️⃣ Governance & Audit View (Planned – Pilot Phase)
-
-A future component designed for **authorised supervisory and audit visibility**.
-
-**Purpose**
-- Monitor acknowledgment timelines
-- Enable delay visibility
-- Support post-incident audits (metadata-first)
-
+This repository is maintained for controlled pilot and evaluation use. For production deployments follow the governance and compliance workflows documented in `docs/README_GOVERNMENT.md`.
 ---
 
 ## 🔐 Security & Integrity Principles
@@ -136,4 +153,4 @@ The platform introduces **time-based visibility**, not punitive escalation.
 ---
 
 ## 🏗️ High-Level Architecture
-
+more phrase will be there with auto ai increment for defense and goverment system so it not for pilot for long time 
